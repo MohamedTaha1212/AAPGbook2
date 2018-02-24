@@ -1,11 +1,13 @@
 package com.projectz.aapg.aapgbook;
 
+import android.Manifest;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,16 +16,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+
+
 
 public class CreatePost extends AppCompatActivity {
+    private final int CAMERA_REQUEST_CODE = 100;
     public static int IMG_RESULT;
     String ImageDecode;
     public EditText postText;
     public String postString;
     ImageView imageViewLoad;
-    String postImage;
     Button galleryButton;
     Button submit;
     Intent intent;
@@ -47,7 +49,9 @@ public class CreatePost extends AppCompatActivity {
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                 startActivityForResult(intent, IMG_RESULT);
-
+                ActivityCompat.requestPermissions(CreatePost.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
             }
 
         });
@@ -59,27 +63,19 @@ public class CreatePost extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
-
             if (requestCode == IMG_RESULT && resultCode == RESULT_OK
                     && null != data) {
-
-
                 Uri URI = data.getData();
                 String[] FILE = { MediaStore.Images.Media.DATA };
 
-
                 Cursor cursor = getContentResolver().query(URI,
                         FILE, null, null, null);
-
                 cursor.moveToFirst();
-
                 int columnIndex = cursor.getColumnIndex(FILE[0]);
                 ImageDecode = cursor.getString(columnIndex);
                 cursor.close();
-
                 imageViewLoad.setImageBitmap(BitmapFactory
                         .decodeFile(ImageDecode));
-
             }
         } catch (Exception e) {
             Toast.makeText(this, "Please try again", Toast.LENGTH_LONG)
@@ -101,6 +97,7 @@ public class CreatePost extends AppCompatActivity {
 
 
         });
+
 
 
     }
